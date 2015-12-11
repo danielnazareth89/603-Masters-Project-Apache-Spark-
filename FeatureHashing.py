@@ -130,6 +130,12 @@ if __name__ == "__main__":
     print "##############          feature hashing        ##############"
     
     start = time.time()
+    
+    #   Number of numerical features from OHE = 233,286
+    #   2 ** 15 = 32,768
+    #   2 ** 17 = 131,072
+    #   2 ** 18 = 262,144
+    
     numBucketsCTR = 2 ** 15
     hashTrainData = raw_Train_Data.map(lambda point: parseHashPoint(point,numBucketsCTR))
     hashTrainData.cache()
