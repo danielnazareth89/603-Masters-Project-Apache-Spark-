@@ -11,6 +11,7 @@ from math import exp
 from collections import defaultdict
 import hashlib
 
+#read in data into Spark RDD
 def loadData():
     
     sc = SparkContext(appName="SparkPi")
@@ -21,6 +22,9 @@ def loadData():
              #.map(lambda x: x.replace(',','==='))
              )
     return rawData
+'''Now reduce dimensionality with hashing. What does hash function do? Takes in a (index,value) tuple and maps it to a number 'x' less
+than total number of buckets which is roughly 1/1000 of total feature categories i.e 33M. Then updates the index=x
+of the sparse feature vector.'''
 
 def hashFunction(numBuckets, rawFeats, printMapping=False):
     mapping = {}
@@ -32,7 +36,7 @@ def hashFunction(numBuckets, rawFeats, printMapping=False):
     for bucket in mapping.values():
         sparseFeatures[bucket] += 1.0
     return dict(sparseFeatures)
-
+#Take all features and create a list of tuples of (index,feature)
 def parsePoint(row):
     
     features = row.split(',')[2:]
@@ -41,7 +45,7 @@ def parsePoint(row):
         indexed_features.append((i,features[i]))
         
     return indexed_features
-
+#Now pass these tuples through hash function to get the hashed features, create a tuple of the label(click/no-click) with Sparse Vector of hashed features
 def parseHashPoint(point, numBuckets):
 
     features=parsePoint(point)
